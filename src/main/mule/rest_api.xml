@@ -39,7 +39,7 @@ output application/json
 payload..payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="cad3a0ed-204f-4266-b43d-6e7b89be5cc1" message="res::#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="cad3a0ed-204f-4266-b43d-6e7b89be5cc1" message="check res::#[payload]"/>
 	</flow>
 	<flow name="rest_apiFlow1" doc:id="4a71b2bd-0069-45d4-a06a-5a744ac48832" >
 		<http:listener doc:name="Listener1" doc:id="ab57ee79-7e71-4f3f-9a05-1b83d0e753b5" config-ref="HTTP_Listener_config1" path="/d1" allowedMethods="POST"/>

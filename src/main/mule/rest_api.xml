@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b13d1233-43af-4974-8209-c0691003b710" >
+		<http:listener-connection host="localhost" port="8096" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="b2ef6607-aee4-4518-9070-337cea1031ab" >
+		<http:listener-connection host="0.0.0.0" port="4040" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config2" doc:name="HTTP Listener config" doc:id="148e128b-7bb6-4891-9d9c-1ee6f8629e42" >
+		<http:listener-connection host="0.0.0.0" port="5050" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="e1a56142-a2f4-4619-8d28-8dfeffb567d8">
+		<http:request-connection host="localhost" port="4040" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="7b1deb83-8de1-4f55-bc8b-d740454888cf" >
+		<http:request-connection host="localhost" port="5050" />
+	</http:request-config>
+	<flow name="rest_apiFlow" doc:id="00566708-0aff-49f3-bea6-884499a89db6" >
+		<http:listener doc:name="Listener" doc:id="bdca143e-35bd-4284-b44e-55139ee8d2f2" config-ref="HTTP_Listener_config" path="/exe" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="25e48e59-1c63-4ddc-8884-61c412c8e9dc" message="#[payload.name]]"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="22f3ae32-fba7-4523-84a9-229b148d3eec" >
+			<route >
+				<http:request method="POST" doc:name="Request1" doc:id="60a7b9e1-ddf1-4c08-b254-14588fc031d4" config-ref="HTTP_Request_configuration" path="/d1"/>
+			</route>
+			<route >
+				<http:request method="POST" doc:name="Request2" doc:id="f7e58a9c-1f83-49c6-b96d-c6df1070660b" config-ref="HTTP_Request_configuration1" path="/d2"/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="6de5ca13-2aed-4096-8d50-41880659665a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload..payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="cad3a0ed-204f-4266-b43d-6e7b89be5cc1" message="res::#[payload]"/>
+	</flow>
+	<flow name="rest_apiFlow1" doc:id="4a71b2bd-0069-45d4-a06a-5a744ac48832" >
+		<http:listener doc:name="Listener1" doc:id="ab57ee79-7e71-4f3f-9a05-1b83d0e753b5" config-ref="HTTP_Listener_config1" path="/d1" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="73276907-36ae-4bdd-8507-58fd44874bda" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	servicename:"du1",
+	status:"success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="rest_apiFlow2" doc:id="eecf618a-53cb-48d5-8eb8-80ce58ce7d4b" >
+		<http:listener doc:name="Listener2" doc:id="5ad627a6-0601-4add-8e44-e1fc8083f2bf" config-ref="HTTP_Listener_config2" path="/d2" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="0d5c8ac7-d31c-4ebb-b812-4d367791ac84" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	servicename:"du2",
+	message:"process",
+	status:"ok"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
